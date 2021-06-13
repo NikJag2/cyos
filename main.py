@@ -17,15 +17,15 @@ gang_symbols = {"Mafia":"<:mafia_symbol:849395018019766332>", "Biker":"<:tigerbi
 
 in_use = [False]
 
-f = open(path[0] + '\\sona.json',"r")
+f = open(path[0] + '/sona.json',"r")
 sona = json.load(f)
 f.close()
 
-f = open(path[0] + '\\gallery.json',"r")
+f = open(path[0] + '/gallery.json',"r")
 gallery_json = json.load(f)
 f.close()
 
-f = open(path[0] + '\\captions.json',"r")
+f = open(path[0] + '/captions.json',"r")
 captions = json.load(f)
 f.close()
 
@@ -66,15 +66,15 @@ async def on_message(message):
         await message.channel.send(embed=embedVar)
 
     if message.content == '*backup' and message.author.id == 542033277163274260:
-        f = open(path[0] + '\\sona.json',"r")
+        f = open(path[0] + '/sona.json',"r")
         await message.channel.send(file=discord.File(f, 'sona.json'))
         f.close()
 
-        f = open(path[0] + '\\gallery.json',"r")
+        f = open(path[0] + '/gallery.json',"r")
         await message.channel.send(file=discord.File(f, 'gallery.json'))
         f.close()
 
-        f = open(path[0] + '\\captions.json',"r")
+        f = open(path[0] + '/captions.json',"r")
         await message.channel.send(file=discord.File(f, 'captions.json'))
         f.close()
         
@@ -255,7 +255,7 @@ async def on_message(message):
             await message.channel.send(embed=embedVar)
 
         json_to_save = json.dumps(gallery_json)
-        f = open(path[0] + '\\gallery.json',"w")
+        f = open(path[0] + '/gallery.json',"w")
         f.write(json_to_save)
         f.close()
 
@@ -264,7 +264,7 @@ async def on_message(message):
         await message.channel.send('Gallery deleted')
 
         json_to_save = json.dumps(gallery_json)
-        f = open(path[0] + '\\gallery.json',"w")
+        f = open(path[0] + '/gallery.json',"w")
         f.write(json_to_save)
         f.close()
 
@@ -283,7 +283,7 @@ async def on_message(message):
                 await message.channel.send((f'Entry {entry} deleted'))
 
                 json_to_save = json.dumps(gallery_json)
-                f = open(path[0] + '\\gallery.json',"w")
+                f = open(path[0] + '/gallery.json',"w")
                 f.write(json_to_save)
                 f.close()
         except:
@@ -304,12 +304,12 @@ async def on_message(message):
                     await message.channel.send((f'Entry {int(message.content[9:entry.end()])} updated'))
 
                     json_to_save = json.dumps(captions)
-                    f = open(path[0] + '\\captions.json',"w")
+                    f = open(path[0] + '/captions.json',"w")
                     f.write(json_to_save)
                     f.close()
         
     json_to_save = json.dumps(sona)
-    f = open(path[0] + '\\sona.json', "w")
+    f = open(path[0] + '/sona.json', "w")
     f.write(json_to_save)
     f.close()
         
