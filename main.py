@@ -158,7 +158,7 @@ async def on_message(message):
 
             await message.channel.send(embed=embedVar)
 
-    if message.content == '*sona':
+    if message.content[:5] == '*sona' and len(message.mentions) == 0:
         if str(message.author) not in sona:
             await message.channel.send(f'<@{message.author.id}> you don\'t have a sona yet nerd')
         else:
@@ -178,6 +178,29 @@ async def on_message(message):
                 embedVar.add_field(name="Class:",value=chosen_classes[0])
 
             embedVar.set_image(url=sona[str(message.author)][1])
+
+            await message.channel.send(embed=embedVar)
+
+    elif message.content[:5] == '*sona' and len(message.mentions) == 1:
+        if str(message.mentions[0]) not in sona:
+            await message.channel.send(f'{message.mentions[0]} does not have a sona yet nerd')
+        else:
+            mafia = [str(i) for i in message.mentions[0].roles if str(i) == "Mafia"]
+            biker = [str(i) for i in message.mentions[0].roles if str(i) == "Biker"]
+            sukeban = [str(i) for i in message.mentions[0].roles if str(i) == "Sukeban"]
+            gang = [i for i in mafia + biker + sukeban]
+
+            chosen_classes = [str(i) for i in message.mentions[0].roles if str(i) in classes]
+
+            embedVar = discord.Embed(title=f'{sona[str(message.mentions[0])][0]}',color=0xccccff)
+            embedVar.add_field(name="Gang:",value=str(gang[0]) + f' {gang_symbols[str(gang[0])]}')
+
+            if len(chosen_classes) > 1:
+                embedVar.add_field(name="Classes:",value=', '.join(chosen_classes))
+            elif len(chosen_classes) == 1:
+                embedVar.add_field(name="Class:",value=chosen_classes[0])
+
+            embedVar.set_image(url=sona[str(message.mentions[0])][1])
 
             await message.channel.send(embed=embedVar)
     
