@@ -11,7 +11,6 @@ path = [os.path.dirname(os.path.abspath(__file__))]
 client = discord.Client()
 load_dotenv()
 token = os.getenv('DISCORD_TOKEN')
-token = 'ODQ2OTQ4NjE0ODA2NTY4OTYw.YK28XQ.Kiy8r28BMrCl90FMONeFUq4NQ5o'
 
 classes = ["Hellion","Vocaloid","Shifter","Fighter","Outcast","Scout","Warlock","Hacker"]
 gang_symbols = {"Mafia":"<:mafia_symbol:849395018019766332>", "Biker":"<:tigerbiker:849297017046171728>","Sukeban":"<:sukeflower:849396667333345292>"}
