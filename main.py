@@ -211,7 +211,7 @@ async def on_message(message):
             del sona[str(message.author)]
             await message.channel.send('Sona deleted')
 
-    if message.content[:8] == '*gallery' and not in_use[0]:
+    if message.content[:8] == '*gallery' and not in_use[0] and len(message.mentions) == 0:
         
         if str(message.author) in gallery_json:
         
@@ -250,12 +250,54 @@ async def on_message(message):
             
             in_use[0] = False
             await gallery.clear_reactions()
-
         else:
             await message.channel.send('You don\'t have a gallery nerd')
-
+            
     elif message.content[:12] == '*gallery' and  in_use[0]:
         await message.channel.send('Another gallery is already in use, please wait')
+
+    if message.content[:8] == '*gallery' and not in_use[0] and len(message.mentions) == 1:
+        
+        if str(message.mentions[0]) in gallery_json:
+        
+            in_use[0] = True
+
+            pages = [discord.Embed(title=(f'Page: {i+1}'),description=(f'{captions[str(message.mentions[0])][i]}'),color=0xccccff) for i in range(len(gallery_json[str(message.mentions[0])]))]
+            for i in range(len(pages)):
+                pages[i].set_image(url=gallery_json[str(message.mentions[0])][i])
+
+            gallery = await message.channel.send(embed=pages[0])
+
+            await gallery.add_reaction('◀')
+            await gallery.add_reaction('▶')
+
+            page_number = 0
+            reaction = None
+
+            def check(reaction, user):
+                return user == message.mentions[0]
+
+            while True:
+                if str(reaction) == '◀':
+                    if page_number > 0:
+                        page_number -= 1
+                        await gallery.edit(embed = pages[page_number])
+                elif str(reaction) == '▶':
+                    if page_number < len(pages)-1:
+                        page_number += 1
+                        await gallery.edit(embed = pages[page_number])
+
+                try:
+                    reaction, user = await client.wait_for('reaction_add', timeout = 30.0,check=check)
+                    await gallery.remove_reaction(reaction, user)
+                except:
+                    break
+            
+            in_use[0] = False
+            await gallery.clear_reactions()
+        else:
+            await message.channel.send('They don\'t have a gallery nerd')
+
     
     if message.content[:18] == '*addgallery -image' and len(message.content) > 18:
         if str(message.author) in gallery_json:
