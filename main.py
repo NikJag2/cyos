@@ -230,7 +230,7 @@ async def on_message(message):
             reaction = None
 
             def check(reaction, user):
-                return user == message.author
+                return user == message.mentions[0]
 
             while True:
                 if str(reaction) == '◀':
