@@ -90,7 +90,7 @@ async def on_message(message):
             name = message.content[15:]
             #image_url = message.content[name_index+1:]
 
-            sona[str(message.author)] = [name,'', 'stats']
+            sona[str(message.author)] = [name, '', 'stats']
 
             mafia = [str(i) for i in message.author.roles if str(i) == "Mafia"]
             biker = [str(i) for i in message.author.roles if str(i) == "Biker"]
@@ -379,11 +379,6 @@ async def on_message(message):
                     f.write(json_to_save)
                     f.close()
         
-    json_to_save = json.dumps(sona)
-    f = open(path[0] + '/sona.json', "w")
-    f.write(json_to_save)
-    f.close()
-
     if message.content == '*smp':
         response = requests.get('https://api.mcsrvstat.us/2/cyossmp.aternos.me')
         response = response.json()
@@ -393,6 +388,11 @@ async def on_message(message):
             await message.channel.send(formatted_str)
         else:
             await message.channel.send('Server is offline')
+
+    json_to_save = json.dumps(sona)
+    f = open(path[0] + '/sona.json', "w")
+    f.write(json_to_save)
+    f.close()
         
 
 client.run(token)
