@@ -1,8 +1,11 @@
 import discord
+from discord_components import DiscordComponents, Button
 import os
 import json
 import re
 from dotenv import load_dotenv
+import requests
+import ast
 
 path = [os.path.dirname(os.path.abspath(__file__))]
 
@@ -61,6 +64,7 @@ async def on_message(message):
                 `*caption <page> <caption>` - Adds a caption to a specified image
                 `*delentry <page>` - Deletes a given page
                 `*delgallery` - Clears gallery
+                `*smp` - Shows online players on the SMP
                 '''
         embedVar = discord.Embed(title='Command List',description=desc,color=0xccccff)
         await message.channel.send(embed=embedVar)
@@ -258,47 +262,50 @@ async def on_message(message):
 
     if message.content[:8] == '*gallery' and not in_use[0] and len(message.mentions) == 1:
         
-        if str(message.mentions[0]) in gallery_json:
-        
-            in_use[0] = True
-
-            pages = [discord.Embed(title=(f'Page: {i+1}'),description=(f'{captions[str(message.mentions[0])][i]}'),color=0xccccff) for i in range(len(gallery_json[str(message.mentions[0])]))]
-            for i in range(len(pages)):
-                pages[i].set_image(url=gallery_json[str(message.mentions[0])][i])
-
-            gallery = await message.channel.send(embed=pages[0])
-
-            await gallery.add_reaction('◀')
-            await gallery.add_reaction('▶')
-
-            page_number = 0
-            reaction = None
-
-            def check(reaction, user):
-                return user == message.author
-
-            while True:
-                if str(reaction) == '◀':
-                    if page_number > 0:
-                        page_number -= 1
-                        await gallery.edit(embed = pages[page_number])
-                elif str(reaction) == '▶':
-                    if page_number < len(pages)-1:
-                        page_number += 1
-                        await gallery.edit(embed = pages[page_number])
-
-                try:
-                    reaction, user = await client.wait_for('reaction_add', timeout = 30.0,check=check)
-                    await gallery.remove_reaction(reaction, user)
-                except:
-                    break
+        try:
+            if str(message.mentions[0]) in gallery_json:
             
-            in_use[0] = False
-            await gallery.clear_reactions()
-        else:
-            await message.channel.send('They don\'t have a gallery nerd')
+                in_use[0] = True
 
-    
+                pages = [discord.Embed(title=(f'Page: {i+1}'),description=(f'{captions[str(message.mentions[0])][i]}'),color=0xccccff) for i in range(len(gallery_json[str(message.mentions[0])]))]
+                for i in range(len(pages)):
+                    pages[i].set_image(url=gallery_json[str(message.mentions[0])][i])
+
+                gallery = await message.channel.send(embed=pages[0])
+
+                await gallery.add_reaction('◀')
+                await gallery.add_reaction('▶')
+
+                page_number = 0
+                reaction = None
+
+                def check(reaction, user):
+                    return user == message.author
+
+                while True:
+                    if str(reaction) == '◀':
+                        if page_number > 0:
+                            page_number -= 1
+                            await gallery.edit(embed = pages[page_number])
+                    elif str(reaction) == '▶':
+                        if page_number < len(pages)-1:
+                            page_number += 1
+                            await gallery.edit(embed = pages[page_number])
+
+                    try:
+                        reaction, user = await client.wait_for('reaction_add', timeout = 30.0,check=check)
+                        await gallery.remove_reaction(reaction, user)
+                    except:
+                        break
+                
+                in_use[0] = False
+                await gallery.clear_reactions()
+            else:
+                await message.channel.send('They don\'t have a gallery nerd')
+        except:
+            await message.channel.send("`Internal Error`, ping nik")
+            in_use[0] = False
+
     if message.content[:18] == '*addgallery -image' and len(message.content) > 18:
         if str(message.author) in gallery_json:
             gallery_json[str(message.author)].append(message.content[19:])
@@ -372,11 +379,52 @@ async def on_message(message):
                     f = open(path[0] + '/captions.json',"w")
                     f.write(json_to_save)
                     f.close()
+
+    if message.content == '*test':
+        embedVar = discord.Embed(title='Queue Menu', description='blah blah blah instructions later', color=0xccccff)
+        menu = await message.channel.send(embed=embedVar)
+
+        await menu.add_reaction('🇦')
+        await menu.add_reaction('🇧')
+        await menu.add_reaction('🇨')
+
+        reaction = None
+
+        def check(reaction, user):
+            return user != client.user
+
+        a = discord.utils.get(user.guild.roles, name = "A")
+        b = discord.utils.get(user.guild.roles, name = "B")
+
+        while True:
+            if str(reaction) == '🇦':
+                await client.add_roles(user, a)
+            elif str(reaction) == '🇧':
+                await client.add_roles(user, b)
+            elif str(reaction) == '🇨':
+                await menu.channel.send('test: c variation')
+            
+            try:
+                reaction, user = await client.wait_for('reaction_add', timeout=30, check=check)
+                await menu.remove_reaction(reaction, user)
+            except:
+                break
+
         
     json_to_save = json.dumps(sona)
     f = open(path[0] + '/sona.json', "w")
     f.write(json_to_save)
     f.close()
+
+    if message.content == '*smp':
+        response = requests.get('https://api.mcsrvstat.us/2/cyossmp.aternos.me')
+        response = response.json()
+        if bool(response['online']):
+            player_list = response['players']['list']
+            formatted_str = 'Players Online:\n' + '\n'.join([f'`{i}`' for i in player_list])
+            await message.channel.send(formatted_str)
+        else:
+            await message.channel.send('Server is offline')
         
 
 client.run(token)
