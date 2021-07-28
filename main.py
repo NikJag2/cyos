@@ -1,5 +1,4 @@
 import discord
-from discord_components import DiscordComponents, Button
 import os
 import json
 import re
@@ -379,37 +378,6 @@ async def on_message(message):
                     f = open(path[0] + '/captions.json',"w")
                     f.write(json_to_save)
                     f.close()
-
-    if message.content == '*test':
-        embedVar = discord.Embed(title='Queue Menu', description='blah blah blah instructions later', color=0xccccff)
-        menu = await message.channel.send(embed=embedVar)
-
-        await menu.add_reaction('🇦')
-        await menu.add_reaction('🇧')
-        await menu.add_reaction('🇨')
-
-        reaction = None
-
-        def check(reaction, user):
-            return user != client.user
-
-        a = discord.utils.get(user.guild.roles, name = "A")
-        b = discord.utils.get(user.guild.roles, name = "B")
-
-        while True:
-            if str(reaction) == '🇦':
-                await client.add_roles(user, a)
-            elif str(reaction) == '🇧':
-                await client.add_roles(user, b)
-            elif str(reaction) == '🇨':
-                await menu.channel.send('test: c variation')
-            
-            try:
-                reaction, user = await client.wait_for('reaction_add', timeout=30, check=check)
-                await menu.remove_reaction(reaction, user)
-            except:
-                break
-
         
     json_to_save = json.dumps(sona)
     f = open(path[0] + '/sona.json', "w")
