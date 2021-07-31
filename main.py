@@ -383,9 +383,12 @@ async def on_message(message):
         response = requests.get('https://api.mcsrvstat.us/2/cyossmp.aternos.me')
         response = response.json()
         if bool(response['online']):
-            player_list = response['players']['list']
-            formatted_str = 'Players Online:\n' + '\n'.join([f'`{i}`' for i in player_list])
-            await message.channel.send(formatted_str)
+            try:
+                player_list = response['players']['list']
+                formatted_str = 'Players Online:\n' + '\n'.join([f'`{i}`' for i in player_list])
+                await message.channel.send(formatted_str)
+            except:
+                await message.channel.send('No players online')
         else:
             await message.channel.send('Server is offline')
 
